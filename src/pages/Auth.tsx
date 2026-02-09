@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,17 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate('/', { replace: true });
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session) navigate('/', { replace: true });
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,11 +33,11 @@ export default function Auth() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) toast({ title: 'Erro ao entrar', description: error.message, variant: 'destructive' });
     } else {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) {
         toast({ title: 'Erro ao criar conta', description: error.message, variant: 'destructive' });
-      } else {
-        toast({ title: 'Conta criada!', description: 'Verifique seu e-mail para confirmar.' });
+      } else if (data.user && !data.session) {
+        toast({ title: 'Este e-mail já está cadastrado', description: 'Tente fazer login com sua senha.', variant: 'destructive' });
       }
     }
     setLoading(false);
