@@ -1,91 +1,33 @@
 
 
-# Meraki — Classificador Automático de Leads
+# Correção de Autenticação — Meraki
 
-## Visão Geral
-Sistema web que classifica mensagens de leads automaticamente, responde dúvidas repetitivas e encaminha apenas leads com intenção de compra para atendimento humano. Inclui simulador de chat integrado para validação imediata e estrutura preparada para WhatsApp Cloud API.
+## Problema Identificado
+1. A conta do usuario ja existe e esta confirmada — tentar criar novamente mostra "Conta criada" mas nao envia email (comportamento de seguranca padrao)
+2. O login funcionou nos logs (status 200), mas a interface pode nao estar redirecionando corretamente apos o login
+3. A confirmacao de email esta ativa, o que dificulta testes com novas contas
 
----
+## Solucoes
 
-## Página 1: Dashboard / Visão Geral
-Cards com métricas do dia:
-- **Interações hoje** — total de mensagens recebidas
-- **Cliques "Quero comprar"** — leads com intenção clara
-- **Atendimentos manuais** — conversas assumidas pelo dono
-- **Vendas registradas** — fechamentos do dia
+### 1. Habilitar auto-confirm de email
+Usar a ferramenta de configuracao de autenticacao para desativar a exigencia de confirmacao por email. Isso permite que novos cadastros entrem direto no sistema sem precisar verificar email — ideal para fase de testes/validacao.
 
-Lista das últimas interações com status (respondida automaticamente / aguardando humano / venda registrada).
+### 2. Corrigir fluxo pos-login na pagina Auth
+Adicionar redirecionamento explicito na pagina Auth.tsx:
+- Verificar se ja existe sessao ativa ao carregar a pagina
+- Se sim, redirecionar automaticamente para o Dashboard
+- Garantir que apos login bem-sucedido, o usuario seja levado ao Dashboard
 
-Paleta: azul escuro (#0B5FFF) primária, verde (#00B894) sucesso, fundo claro (#F5F7FA).
+### 3. Melhorar feedback de erro no signup
+Quando o signup retorna "user_repeated_signup", o sistema atualmente mostra "Conta criada" de forma enganosa. Ajustar para:
+- Verificar se a resposta indica conta ja existente
+- Mostrar mensagem mais clara: "Este email ja esta cadastrado. Tente fazer login."
 
----
+## Arquivos que serao modificados
+- `src/pages/Auth.tsx` — adicionar verificacao de sessao e melhorar feedback
+- Configuracao de auth (auto-confirm) via ferramenta do sistema
 
-## Página 2: Fila de Leads Prontos
-Lista de leads que clicaram "Quero comprar", ordenados por mais recente:
-- Nome/contato, categoria da dúvida, tempo desde o clique
-- Badge verde "Quero comprar"
-- Drawer com histórico completo da conversa ao clicar
-- Botões "Assumir atendimento" e "Registrar venda"
-- Toast animado quando novo lead entra na fila
-
----
-
-## Página 3: Simulador de Chat
-Chat embutido para testar o fluxo sem precisar do WhatsApp:
-- Bolhas de mensagem (lead à esquerda, sistema à direita)
-- Indicador "digitando..." antes da resposta
-- Classificação automática por palavras-chave
-- Resposta baseada nos templates configurados
-- Botão "Quero comprar" em todas as respostas
-- Ao clicar, lead aparece na fila de atendimento
-
----
-
-## Página 4: Templates de Resposta
-Configuração por categoria (Preço, Cores, Tamanhos, Pagamento, Frete, Outro):
-- Campo de texto com resposta padrão para cada categoria
-- Variáveis: `{{preco}}`, `{{cores_disponiveis}}`, `{{link_produto}}`
-- Toggle ativar/desativar por categoria
-- Botão para testar no simulador
-
----
-
-## Página 5: Logs / Histórico
-Tabela com todas as interações:
-- Data/hora, contato, mensagem, categoria, resposta enviada, clicou "Quero comprar"
-- Filtros por data e categoria
-- Contadores agregados para validação da hipótese
-
----
-
-## Página 6: Configurações e Integração
-- **Dados da loja**: nome, produtos, valores para templates
-- **Dicionário de palavras-chave**: palavras que ativam cada categoria
-- **WhatsApp Cloud API**: guia passo a passo, campos para token e phone ID, status de conexão
-- **Notificações**: toggle para notificações do navegador
-
----
-
-## Motor de Classificação
-- Dicionário configurável de palavras-chave por categoria
-- Matching parcial, case-insensitive
-- Fallback para mensagens não reconhecidas com pedido de clarificação + CTA
-- Toda resposta termina com botão "Quero comprar"
-
----
-
-## Backend (Supabase)
-- Tabelas: templates, interaction_logs, qualified_leads, store_config, keyword_dictionaries
-- Edge function para classificação e resposta automática
-- Edge function preparada para webhook do WhatsApp (conexão futura)
-
----
-
-## Fluxo do Usuário
-1. Configura templates e palavras-chave
-2. Testa no simulador de chat
-3. (Futuro) Conecta WhatsApp Cloud API
-4. Recebe notificação quando lead clica "Quero comprar"
-5. Abre conversa, vê histórico, assume atendimento
-6. Registra venda manualmente
-
+## Resultado esperado
+- Usuario consegue fazer login normalmente com a conta existente
+- Novos cadastros entram sem precisar confirmar email
+- Mensagens de feedback mais claras sobre contas duplicadas
