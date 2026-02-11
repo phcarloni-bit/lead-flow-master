@@ -29,6 +29,10 @@ const DEFAULT_DICTIONARIES: KeywordDictionary[] = [
     category: 'Frete',
     keywords: ['frete', 'entrega', 'envio', 'prazo', 'chegar', 'correios', 'sedex', 'transportadora', 'retirar'],
   },
+  {
+    category: 'Trocas',
+    keywords: ['troca', 'trocar', 'devolução', 'devolver', 'defeito', 'arrependimento', 'reembolso', 'garantia', 'errado', 'tamanho errado'],
+  },
 ];
 
 export function classifyMessage(
@@ -81,5 +85,6 @@ export const DEFAULT_TEMPLATES = [
   { category: 'Tamanhos', response_text: 'Trabalhamos com tamanhos P, M, G e GG. Posso te ajudar a escolher o ideal? 📏', is_active: true },
   { category: 'Pagamento', response_text: 'Aceitamos PIX, cartão de crédito (até 12x) e boleto bancário. 💳', is_active: true },
   { category: 'Frete', response_text: 'Fazemos envio para todo o Brasil! O prazo médio é de 5-10 dias úteis. 📦', is_active: true },
+  { category: 'Trocas', response_text: 'Aceitamos trocas em até 7 dias após o recebimento, desde que o produto esteja sem uso e com etiqueta. Entre em contato para iniciar o processo! 🔄', is_active: true },
   { category: 'Outro', response_text: 'Obrigado pelo contato! Vou verificar e te respondo em breve. 😊', is_active: true },
 ];
