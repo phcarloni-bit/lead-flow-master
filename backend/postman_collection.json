@@ -1,0 +1,86 @@
+{
+  "info": {
+    "_postman_id": "leadflow-whatsapp-api-collection",
+    "name": "🤖 LeadFlow WhatsApp Backend",
+    "description": "Complete API testing collection for LeadFlow WhatsApp integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🏥 Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "🔗 Webhook Verification",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/webhooks/whatsapp?hub.mode=subscribe&hub.challenge=test_challenge&hub.verify_token={{verify_token}}",
+          "host": ["{{base_url}}"],
+          "path": ["webhooks", "whatsapp"],
+          "query": [
+            {"key": "hub.mode", "value": "subscribe"},
+            {"key": "hub.challenge", "value": "test_challenge"},
+            {"key": "hub.verify_token", "value": "{{verify_token}}"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "📱 Send Text Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{whatsapp_token}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"messaging_product\":\"whatsapp\",\"to\":\"{{phone_number}}\",\"type\":\"text\",\"text\":{\"body\":\"Qual é o preço?\"}}"
+        },
+        "url": {
+          "raw": "https://graph.instagram.com/v18.0/{{phone_id}}/messages",
+          "protocol": "https",
+          "host": ["graph.instagram.com"],
+          "path": ["v18.0", "{{phone_id}}", "messages"]
+        }
+      }
+    },
+    {
+      "name": "🛒 Send Message with Button",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{whatsapp_token}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"messaging_product\":\"whatsapp\",\"to\":\"{{phone_number}}\",\"type\":\"interactive\",\"interactive\":{\"type\":\"button\",\"body\":{\"text\":\"O valor é R$ 99,90. Temos condições especiais! 💰\"},\"action\":{\"buttons\":[{\"type\":\"reply\",\"reply\":{\"id\":\"buy_now\",\"title\":\"Quero comprar! 🛒\"}}]}}}"
+        },
+        "url": {
+          "raw": "https://graph.instagram.com/v18.0/{{phone_id}}/messages",
+          "protocol": "https",
+          "host": ["graph.instagram.com"],
+          "path": ["v18.0", "{{phone_id}}", "messages"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:3000"},
+    {"key": "whatsapp_token", "value": "EABa..."},
+    {"key": "phone_id", "value": "102123456789000"},
+    {"key": "phone_number", "value": "5511999999999"},
+    {"key": "verify_token", "value": "my_random_token_123"}
+  ]
+}
