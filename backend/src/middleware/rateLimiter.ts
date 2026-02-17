@@ -135,8 +135,8 @@ export async function checkRateLimit(phoneNumber: string): Promise<boolean> {
     return true;
   }
 
+  const key = `rate_limit:${phoneNumber}`;
   try {
-    const key = `rate_limit:${phoneNumber}`;
     const current = await redisClient.get(key);
     return !current;
   } catch (err) {
@@ -195,7 +195,7 @@ export async function debounceMiddleware(
       }
       
       // Store current message
-      await redisClient.setex(
+      await redisClient.setEx(
         key,
         Math.ceil(DEBOUNCE_WINDOW / 1000),
         `${now}|${messageHash}`
