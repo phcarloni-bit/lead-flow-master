@@ -16,6 +16,11 @@ export async function connectRedis() {
     }
     return redisClient;
   } catch (err) {
+    // In development, Redis is optional for basic testing
+    if (process.env.NODE_ENV === "development") {
+      logger.warn(`⚠️  Redis connection failed (continuing in dev mode): ${err}`);
+      return null;
+    }
     logger.error(`❌ Redis connection failed: ${err}`);
     throw err;
   }
