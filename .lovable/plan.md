@@ -1,58 +1,27 @@
 
 # Importar Templates via IA -- Analise automatica de site/Instagram
 
-## O que sera feito
-Adicionar um botao "Gerar com IA" na pagina de Templates que analisa a URL de um site ou Instagram e gera automaticamente os templates de resposta e as palavras-chave de cada categoria, usando Lovable AI (sem precisar de chave de API externa).
+## Status: ✅ CONCLUÍDO
 
-## Como funciona
+## O que foi feito
+Botao "Gerar com IA" na pagina de Templates que analisa a URL de um site ou Instagram e gera automaticamente os templates de resposta e as palavras-chave de cada categoria, usando Lovable AI (sem precisar de chave de API externa).
 
-1. O usuario digita a URL do Instagram ou site da loja
-2. Clica em "Gerar com IA"
-3. Uma funcao backend chama a Lovable AI (Gemini) com um prompt detalhado pedindo informacoes da loja
-4. A IA retorna templates estruturados com textos de resposta e palavras-chave por categoria
-5. Os templates e palavras-chave sao preenchidos automaticamente na interface
-6. O usuario revisa e clica em "Salvar Todos" para persistir no banco
+## Itens implementados
 
-## Arquivos que serao criados/modificados
+- [x] **Edge function `generate-templates`** — Recebe URL, chama Lovable AI Gateway (Gemini 3 Flash) com tool calling, retorna JSON estruturado com 7 categorias
+- [x] **UI em Templates.tsx** — Campo de URL com icone Instagram/Globe, botao "Gerar com IA" com loading spinner, exibicao de keywords geradas
+- [x] **Categoria "Trocas"** — Adicionada ao classification-engine com keywords e template padrao
+- [x] **Salvar keywords no banco** — Keywords geradas pela IA sao persistidas na tabela `keyword_dictionaries`
+- [x] **Tratamento de erros 429/402** — Toasts especificos para rate limit e creditos esgotados, tanto via status HTTP quanto via mensagem no body
+- [x] **Mapeamento de categorias AI → Meraki** — price→Preco, colors→Cores, sizes→Tamanhos, payment→Pagamento, shipping→Frete, exchanges→Trocas, fallback→Outro
 
-### 1. Nova edge function: `supabase/functions/generate-templates/index.ts`
-- Recebe a URL do site/Instagram
-- Chama a Lovable AI Gateway com o modelo `google/gemini-3-flash-preview`
-- Usa tool calling para extrair JSON estruturado com 7 categorias: Preco, Cores, Tamanhos, Pagamento, Frete, Trocas e Outro (fallback)
-- Cada categoria inclui: nome, texto de resposta e lista de palavras-chave
-- Retorna o JSON estruturado para o frontend
+## Arquivos criados/modificados
 
-### 2. Modificar: `src/pages/Templates.tsx`
-- Adicionar campo de URL com icone de Instagram/Globe
-- Botao "Gerar com IA" com estado de loading (spinner)
-- Ao receber os templates da IA, atualizar o estado local
-- Tambem salvar as palavras-chave geradas na tabela `keyword_dictionaries`
-- Manter o botao "Salvar Todos" existente para persistir templates
-
-### 3. Atualizar: `supabase/config.toml`
-- Registrar a nova edge function `generate-templates`
-
-## Mapeamento de categorias (AI Studio para Meraki)
-
-| AI Studio (id) | Meraki (category) |
-|----------------|-------------------|
-| price          | Preco             |
-| colors         | Cores             |
-| sizes          | Tamanhos          |
-| payment        | Pagamento         |
-| shipping       | Frete             |
-| exchanges      | Trocas            |
-| fallback       | Outro             |
-
-A categoria "Trocas" sera adicionada como nova categoria no sistema.
-
-## Prompt da IA (adaptado do codigo do AI Studio)
-
-O prompt instruira a IA a:
-- Buscar informacoes publicas sobre a loja na URL fornecida
-- Extrair politica de precos, cores disponiveis, tamanhos, pagamento, frete e trocas
-- Gerar textos de resposta naturais, educados e vendedores em Portugues do Brasil
-- Incluir 5-10 palavras-chave por categoria para ativar a classificacao automatica
+| Arquivo | Acao |
+|---------|------|
+| `supabase/functions/generate-templates/index.ts` | Criado |
+| `src/pages/Templates.tsx` | Modificado |
+| `src/lib/classification-engine.ts` | Modificado |
 
 ## Fluxo tecnico
 
@@ -78,8 +47,3 @@ Usuario revisa e clica "Salvar Todos"
        v
 Templates salvos no banco + keywords atualizadas
 ```
-
-## Observacoes
-- Nao requer chave de API externa -- usa a LOVABLE_API_KEY ja configurada automaticamente
-- O prompt nao e exposto no frontend, fica todo no backend
-- Erros de rate limit (429) e creditos (402) serao tratados e exibidos como toast
