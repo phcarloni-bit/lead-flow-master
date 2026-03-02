@@ -49,11 +49,26 @@ export default function Templates() {
       });
 
       if (error) {
+        const status = (error as any)?.status || (error as any)?.context?.status;
+        if (status === 429) {
+          toast({ title: '⏳ Limite de requisições', description: 'Muitas requisições seguidas. Aguarde alguns minutos e tente novamente.', variant: 'destructive' });
+          return;
+        }
+        if (status === 402) {
+          toast({ title: '💳 Créditos esgotados', description: 'Seus créditos de IA acabaram. Adicione mais créditos ao workspace para continuar.', variant: 'destructive' });
+          return;
+        }
         throw new Error(error.message || 'Erro ao gerar templates');
       }
 
       if (data?.error) {
-        toast({ title: 'Erro da IA', description: data.error, variant: 'destructive' });
+        if (data.error.includes('Limite de requisições') || data.error.includes('rate')) {
+          toast({ title: '⏳ Limite de requisições', description: 'Muitas requisições seguidas. Aguarde alguns minutos e tente novamente.', variant: 'destructive' });
+        } else if (data.error.includes('Créditos') || data.error.includes('créditos')) {
+          toast({ title: '💳 Créditos esgotados', description: 'Seus créditos de IA acabaram. Adicione mais créditos ao workspace para continuar.', variant: 'destructive' });
+        } else {
+          toast({ title: 'Erro da IA', description: data.error, variant: 'destructive' });
+        }
         return;
       }
 
