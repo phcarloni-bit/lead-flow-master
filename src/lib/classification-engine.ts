@@ -76,6 +76,11 @@ export function buildResponse(
       .replace(/\{\{link_produto\}\}/g, storeConfig.product_link || '[link não configurado]');
   }
 
+  // Append CTA to all responses
+  if (!response.includes('Quero comprar')) {
+    response += '\n\nGostou? Clique em "Quero comprar" para falar com um atendente! 🛒';
+  }
+
   return response;
 }
 
