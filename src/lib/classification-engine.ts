@@ -8,30 +8,63 @@ export interface ClassificationResult {
   matched: boolean;
 }
 
+// Priority order: higher priority categories are checked first
+const CATEGORY_PRIORITY: string[] = [
+  'Como Comprar',
+  'Rastreamento',
+  'Preço',
+  'Uso e Indicações',
+  'Segurança',
+  'Cores',
+  'Tamanhos',
+  'Pagamento',
+  'Frete',
+  'Trocas',
+];
+
+const normalize = (str: string): string =>
+  str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 const DEFAULT_DICTIONARIES: KeywordDictionary[] = [
   {
+    category: 'Como Comprar',
+    keywords: ['comprar', 'compra', 'pedido', 'whatsapp', 'instagram', 'vende por aqui', 'faz pedido', 'linha', 'gestante', 'plus size', 'como faço', 'onde compro', 'site'],
+  },
+  {
+    category: 'Rastreamento',
+    keywords: ['rastreio', 'rastrear', 'acompanhar', 'onde está', 'chegou', 'código', 'status do pedido', 'cpf', 'meu pedido'],
+  },
+  {
     category: 'Preço',
-    keywords: ['preço', 'quanto custa', 'valor', 'quanto é', 'quanto tá', 'quanto ta', 'barato', 'caro', 'desconto', 'promoção', 'promocao', 'oferta'],
+    keywords: ['preço', 'valor', 'custa', 'quanto', 'sale', 'promoção', 'desconto', 'oferta', 'barato', 'caro', 'quanto é', 'quanto tá'],
   },
   {
     category: 'Cores',
-    keywords: ['cor', 'cores', 'colorido', 'preto', 'branco', 'azul', 'vermelho', 'rosa', 'verde', 'amarelo'],
+    keywords: ['cor', 'cores', 'disponível', 'tem preto', 'tem nude', 'tem bege', 'chocolate', 'preto', 'branco', 'rosa', 'nude'],
   },
   {
     category: 'Tamanhos',
-    keywords: ['tamanho', 'tamanhos', 'número', 'numero', 'medida', 'p ', 'm ', 'g ', 'gg', 'pp', 'grande', 'pequeno'],
+    keywords: ['tamanho', 'medida', 'serve', 'veste', 'gg', 'pp', 'plus size', 'xgg', 'cintura', 'busto', 'quadril', 'ficou grande', 'apertado', 'escolher tamanho', 'entre dois tamanhos', '3g', 'tabela'],
   },
   {
     category: 'Pagamento',
-    keywords: ['pagamento', 'pagar', 'parcela', 'parcelamento', 'pix', 'cartão', 'cartao', 'boleto', 'dinheiro', 'à vista', 'a vista'],
+    keywords: ['pagamento', 'pagar', 'cartão', 'pix', 'boleto', 'parcela', 'juros', '12x', 'parcelamento', 'forma de pagamento', 'à vista'],
   },
   {
     category: 'Frete',
-    keywords: ['frete', 'entrega', 'envio', 'prazo', 'chegar', 'correios', 'sedex', 'transportadora', 'retirar'],
+    keywords: ['frete', 'envio', 'correio', 'prazo', 'chega', 'entrega', 'cep', 'grátis', 'transportadora', 'para onde', 'enviam para', 'dias úteis'],
   },
   {
     category: 'Trocas',
-    keywords: ['troca', 'trocar', 'devolução', 'devolver', 'defeito', 'arrependimento', 'reembolso', 'garantia', 'errado', 'tamanho errado'],
+    keywords: ['troca', 'devolução', 'devolver', 'trocar', 'não serviu', 'errado', 'política', 'reembolso', 'garantia', 'defeito'],
+  },
+  {
+    category: 'Segurança',
+    keywords: ['seguro', 'segurança', 'confiável', 'golpe', 'fraude', 'criptografia', 'é seguro', 'confiavel'],
+  },
+  {
+    category: 'Uso e Indicações',
+    keywords: ['usar', 'dormir', 'cirurgia', 'pós operatório', 'lipo', 'horas', 'tempo', 'dia todo', 'machuca', 'pós cirúrgico', 'indicação'],
   },
 ];
 
