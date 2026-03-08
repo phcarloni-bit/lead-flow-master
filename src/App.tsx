@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import LeadQueue from "./pages/LeadQueue";
 import ChatSimulator from "./pages/ChatSimulator";
 import Templates from "./pages/Templates";
+import Integrations from "./pages/Integrations";
 import Logs from "./pages/Logs";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/leads" element={<AuthGuard><LeadQueue /></AuthGuard>} />
           <Route path="/simulator" element={<AuthGuard><ChatSimulator /></AuthGuard>} />
           <Route path="/templates" element={<AuthGuard><Templates /></AuthGuard>} />
+          <Route path="/integrations" element={<AuthGuard><Integrations /></AuthGuard>} />
           <Route path="/logs" element={<AuthGuard><Logs /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard><SettingsPage /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />

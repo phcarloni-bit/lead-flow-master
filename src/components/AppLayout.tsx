@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Zap,
+  Plug,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -21,6 +22,7 @@ const navItems = [
   { to: '/simulator', label: 'Simulador', icon: MessageSquare },
   { to: '/templates', label: 'Templates', icon: FileText },
   { to: '/logs', label: 'Histórico', icon: ClipboardList },
+  { to: '/integrations', label: 'Integrações', icon: Plug },
   { to: '/settings', label: 'Configurações', icon: Settings },
 ];
 
