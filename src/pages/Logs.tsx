@@ -176,7 +176,7 @@ export default function Logs() {
             <TableBody>
               {filteredLogs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                     Nenhum registro encontrado
                   </TableCell>
                 </TableRow>
