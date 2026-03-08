@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -18,7 +19,7 @@ import { Button } from '@/components/ui/button';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/leads', label: 'Fila de Leads', icon: Users },
+  { to: '/leads', label: 'Fila de Leads', icon: Users, countKey: 'leads' as const },
   { to: '/simulator', label: 'Simulador', icon: MessageSquare },
   { to: '/templates', label: 'Templates', icon: FileText },
   { to: '/logs', label: 'Histórico', icon: ClipboardList },
@@ -29,7 +30,26 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeLeadsCount, setActiveLeadsCount] = useState(0);
   usePushNotifications();
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from('qualified_leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'waiting');
+      setActiveLeadsCount(count || 0);
+    };
+    fetchCount();
+
+    const channel = supabase
+      .channel('sidebar-leads-count')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'qualified_leads' }, () => fetchCount())
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -58,6 +78,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 space-y-1 p-3">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
+            const showBadge = item.countKey === 'leads' && activeLeadsCount > 0;
             return (
               <Link
                 key={item.to}
@@ -70,8 +91,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 )}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className={cn('h-4 w-4', isActive && 'stroke-[2.5]')} />
                 {item.label}
+                {showBadge && (
+                  <span className="ml-auto bg-sidebar-primary text-sidebar-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full animate-in zoom-in">
+                    {activeLeadsCount}
+                  </span>
+                )}
               </Link>
             );
           })}

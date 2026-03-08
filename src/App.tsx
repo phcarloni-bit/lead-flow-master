@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 import AppLayout from "./components/AppLayout";
+import OnboardingWizard from "./components/OnboardingWizard";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import LeadQueue from "./pages/LeadQueue";
@@ -21,6 +22,7 @@ const queryClient = new QueryClient();
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -28,8 +30,31 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (session === undefined) return null; // loading
+  // Check if user has templates (onboarding completed)
+  useEffect(() => {
+    if (!session) return;
+    const check = async () => {
+      const { count } = await supabase
+        .from('templates')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', session.user.id);
+      setShowOnboarding(count === 0);
+    };
+    check();
+  }, [session]);
+
+  if (session === undefined || showOnboarding === null) return null;
   if (!session) return <Navigate to="/auth" replace />;
+
+  if (showOnboarding) {
+    return (
+      <OnboardingWizard
+        onComplete={() => setShowOnboarding(false)}
+        onSkip={() => setShowOnboarding(false)}
+      />
+    );
+  }
+
   return <AppLayout>{children}</AppLayout>;
 }
 
