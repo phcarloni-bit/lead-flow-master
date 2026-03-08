@@ -44,9 +44,8 @@ export default function LeadQueue() {
     fetchLeads();
     const channel = supabase
       .channel('lead-queue')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qualified_leads' }, (payload) => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'qualified_leads' }, () => {
         fetchLeads();
-        toast({ title: '🔔 Novo lead!', description: `${(payload.new as Lead).contact_name} quer comprar!` });
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
