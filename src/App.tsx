@@ -45,6 +45,7 @@ const App = () => (
           <Route path="/leads" element={<AuthGuard><LeadQueue /></AuthGuard>} />
           <Route path="/simulator" element={<AuthGuard><ChatSimulator /></AuthGuard>} />
           <Route path="/templates" element={<AuthGuard><Templates /></AuthGuard>} />
+          <Route path="/integrations" element={<AuthGuard><Integrations /></AuthGuard>} />
           <Route path="/logs" element={<AuthGuard><Logs /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard><SettingsPage /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
