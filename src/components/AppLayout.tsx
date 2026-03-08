@@ -27,6 +27,7 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  usePushNotifications();
 
   return (
     <div className="flex h-screen overflow-hidden">
