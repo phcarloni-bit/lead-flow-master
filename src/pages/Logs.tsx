@@ -167,6 +167,7 @@ export default function Logs() {
                 <TableHead>Contato</TableHead>
                 <TableHead>Canal</TableHead>
                 <TableHead>Mensagem</TableHead>
+                <TableHead>Resposta</TableHead>
                 <TableHead>Categoria</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Comprar?</TableHead>
@@ -175,7 +176,7 @@ export default function Logs() {
             <TableBody>
               {filteredLogs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                     Nenhum registro encontrado
                   </TableCell>
                 </TableRow>
@@ -190,6 +191,7 @@ export default function Logs() {
                       <Badge variant="outline" className="text-xs">{log.channel}</Badge>
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate text-sm">{log.message_received}</TableCell>
+                    <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">{log.response_sent || '—'}</TableCell>
                     <TableCell>
                       {log.category_assigned ? (
                         <Badge variant="secondary">{log.category_assigned}</Badge>
