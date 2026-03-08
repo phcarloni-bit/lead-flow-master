@@ -73,12 +73,18 @@ export function classifyMessage(
   dictionaries?: KeywordDictionary[]
 ): ClassificationResult {
   const dicts = dictionaries && dictionaries.length > 0 ? dictionaries : DEFAULT_DICTIONARIES;
-  const lowerMessage = message.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normalizedMessage = normalize(message);
 
-  for (const dict of dicts) {
+  // Sort dictionaries by priority order
+  const sortedDicts = [...dicts].sort((a, b) => {
+    const idxA = CATEGORY_PRIORITY.indexOf(a.category);
+    const idxB = CATEGORY_PRIORITY.indexOf(b.category);
+    return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+  });
+
+  for (const dict of sortedDicts) {
     for (const keyword of dict.keywords) {
-      const normalizedKeyword = keyword.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      if (lowerMessage.includes(normalizedKeyword)) {
+      if (normalizedMessage.includes(normalize(keyword))) {
         return { category: dict.category, matched: true };
       }
     }
