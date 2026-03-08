@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Zap,
+  Plug,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
