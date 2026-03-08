@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -17,15 +18,11 @@ interface Template {
   keywords?: string[];
 }
 
-const FIXED_URLS = [
-  'https://www.instagram.com/siloueteshapewear',
-  'https://www.silouete.com.br/',
-];
-
 export default function Templates() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [url, setUrl] = useState('https://www.silouete.com.br/');
 
   const fetchTemplates = async () => {
     const { data } = await supabase.from('templates').select('*').order('category');
@@ -42,8 +39,13 @@ export default function Templates() {
   const handleGenerateWithAI = async () => {
     setIsGenerating(true);
     try {
+      const urls = [url];
+      if (!url.includes('instagram')) {
+        urls.push('https://www.instagram.com/siloueteshapewear');
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-templates', {
-        body: { urls: FIXED_URLS },
+        body: { urls },
       });
 
       if (error) {
@@ -137,38 +139,54 @@ export default function Templates() {
   if (loading) return <p className="text-muted-foreground">Carregando...</p>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold">Respostas Automáticas</h2>
+          <p className="text-muted-foreground text-sm">Configure o que o bot responde para cada tipo de dúvida.</p>
+        </div>
+        <Button onClick={saveAll}>
+          <Save className="mr-1 h-4 w-4" /> Salvar Todos
+        </Button>
+      </div>
+
       {/* AI Import Section */}
-      <Card className="border-primary/20 bg-primary/5">
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-sm">Importar do Instagram / Site</h3>
-          </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            A IA vai analisar os perfis oficiais da Silouete para gerar templates automáticos com todas as 11 categorias.
-          </p>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Instagram className="h-3.5 w-3.5" />
-              <span>@siloueteshapewear</span>
+          <div className="flex flex-col md:flex-row gap-4 items-end md:items-center justify-between">
+            <div className="space-y-2 flex-1 w-full">
+              <h3 className="flex items-center gap-2 font-semibold text-primary">
+                <Sparkles className="h-5 w-5" />
+                Importar do Instagram / Site
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Digite a URL do perfil do Instagram ou Site. A IA irá raciocinar sobre as informações públicas para configurar o bot.
+              </p>
+              <div className="relative flex-1">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  {url.includes('instagram') ? <Instagram className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
+                </div>
+                <Input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="pl-9"
+                  placeholder="https://www.instagram.com/sua_loja"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Globe className="h-3.5 w-3.5" />
-              <span>silouete.com.br</span>
-            </div>
+            <Button onClick={handleGenerateWithAI} disabled={isGenerating} className="h-10 whitespace-nowrap">
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Pensando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-1 h-4 w-4" /> Gerar com IA
+                </>
+              )}
+            </Button>
           </div>
-          <Button onClick={handleGenerateWithAI} disabled={isGenerating}>
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Analisando...
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-1 h-4 w-4" /> Gerar com IA
-              </>
-            )}
-          </Button>
         </CardContent>
       </Card>
 
@@ -184,39 +202,36 @@ export default function Templates() {
         </Button>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Variáveis disponíveis: <code className="rounded bg-muted px-1">{'{{preco}}'}</code>{' '}
-          <code className="rounded bg-muted px-1">{'{{cores_disponiveis}}'}</code>{' '}
-          <code className="rounded bg-muted px-1">{'{{link_produto}}'}</code>
-        </p>
-        <Button onClick={saveAll}>
-          <Save className="mr-1 h-4 w-4" /> Salvar Todos
-        </Button>
-      </div>
+      <p className="text-sm text-muted-foreground">
+        Variáveis disponíveis: <code className="rounded bg-muted px-1">{'{{preco}}'}</code>{' '}
+        <code className="rounded bg-muted px-1">{'{{cores_disponiveis}}'}</code>{' '}
+        <code className="rounded bg-muted px-1">{'{{link_produto}}'}</code>
+      </p>
 
       {/* Grid 2 colunas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {templates.map((t, i) => (
           <Card key={t.id} className={!t.is_active ? 'opacity-70' : ''}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 bg-muted/30 rounded-t-lg">
               <div className="flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${t.is_active ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
                 <CardTitle className="text-base">{t.category}</CardTitle>
               </div>
               <Switch checked={t.is_active} onCheckedChange={(v) => updateTemplate(i, 'is_active', v)} />
             </CardHeader>
-            <CardContent className="space-y-3">
-              {t.keywords && t.keywords.length > 0 && (
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1 uppercase font-medium">Palavras-chave</p>
-                  <div className="flex flex-wrap gap-1">
-                    {t.keywords.map((k, ki) => (
+            <CardContent className="space-y-3 pt-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1 uppercase font-medium">Palavras-chave</p>
+                <div className="flex flex-wrap gap-1">
+                  {t.keywords && t.keywords.length > 0 ? (
+                    t.keywords.map((k, ki) => (
                       <Badge key={ki} variant="outline" className="text-xs">{k}</Badge>
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <span className="text-muted-foreground text-xs italic">Nenhuma (Padrão)</span>
+                  )}
                 </div>
-              )}
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1 uppercase font-medium">Mensagem</p>
                 <Textarea
