@@ -184,13 +184,19 @@ Deno.serve(async (req) => {
 
     const VERIFY_TOKEN = Deno.env.get("WHATSAPP_VERIFY_TOKEN");
 
+    console.log(`🔍 Verification attempt - mode: "${mode}", token received: "${token}", expected: "${VERIFY_TOKEN}", challenge: "${challenge}"`);
+    console.log(`🔍 Token match: ${token === VERIFY_TOKEN}, token length: ${token?.length}, expected length: ${VERIFY_TOKEN?.length}`);
+
     if (mode === "subscribe" && token === VERIFY_TOKEN) {
       console.log("✅ Webhook verified!");
-      return new Response(challenge || "", { status: 200 });
+      return new Response(challenge || "", {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "text/plain" },
+      });
     }
 
     console.warn("❌ Webhook verification failed");
-    return new Response("Forbidden", { status: 403 });
+    return new Response("Forbidden", { status: 403, headers: corsHeaders });
   }
 
   // ── POST: Incoming messages ──
