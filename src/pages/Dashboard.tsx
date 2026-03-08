@@ -150,10 +150,12 @@ export default function Dashboard() {
           const isUp = m.trend.startsWith('+') && m.trend !== '+0%';
           const isDown = m.trend.startsWith('-');
           return (
-            <Card key={m.label}>
+            <Card key={m.label} className="group hover:shadow-lg transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{m.label}</CardTitle>
-                <m.icon className={`h-5 w-5 ${m.color}`} />
+                <div className="p-2 rounded-full bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <m.icon className="h-4 w-4" />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{m.value}</div>
