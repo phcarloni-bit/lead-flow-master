@@ -99,7 +99,7 @@ export function buildResponse(
   storeConfig?: { default_price?: string; available_colors?: string; product_link?: string }
 ): string {
   if (!category) {
-    return 'Não entendi sua dúvida. Poderia reformular? 😊\n\nSe quiser, posso te ajudar com informações sobre preço, cores, tamanhos, pagamento ou frete.\n\nSe já decidiu, clique em "Quero comprar" que um atendente vai te ajudar! 🛒';
+    return 'Olá! 👋 Não entendi sua dúvida, mas posso te ajudar com informações sobre preço, cores, tamanhos, pagamento, frete, trocas e muito mais!\n\nDigite sua pergunta ou clique em "Quero comprar" que um atendente vai te ajudar! 🛒';
   }
 
   const template = templates.find((t) => t.category === category && t.is_active);
