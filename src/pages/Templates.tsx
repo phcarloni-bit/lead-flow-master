@@ -18,10 +18,14 @@ interface Template {
   keywords?: string[];
 }
 
+const FIXED_URLS = [
+  'https://www.instagram.com/siloueteshapewear',
+  'https://www.silouete.com.br/',
+];
+
 export default function Templates() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState('https://www.instagram.com/siloueteshapewear');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const fetchTemplates = async () => {

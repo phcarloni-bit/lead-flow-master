@@ -7,12 +7,16 @@ const corsHeaders = {
 };
 
 const CATEGORY_MAP: Record<string, string> = {
+  how_to_buy: "Como Comprar",
   price: "Preço",
   colors: "Cores",
   sizes: "Tamanhos",
   payment: "Pagamento",
   shipping: "Frete",
+  tracking: "Rastreamento",
   exchanges: "Trocas",
+  security: "Segurança",
+  usage: "Uso e Indicações",
   fallback: "Outro",
 };
 
@@ -22,9 +26,9 @@ serve(async (req) => {
   }
 
   try {
-    const { url } = await req.json();
-    if (!url) {
-      return new Response(JSON.stringify({ error: "URL é obrigatória" }), {
+    const { urls } = await req.json();
+    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+      return new Response(JSON.stringify({ error: "URLs são obrigatórias" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -35,30 +39,41 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    const urlList = urls.join("\n- ");
+
     const systemPrompt = `Você é um assistente especialista em e-commerce e atendimento ao cliente no Brasil.
-Sua tarefa é analisar a URL fornecida e extrair informações sobre a loja para gerar templates de atendimento automático.
+Sua tarefa é analisar as URLs fornecidas (Instagram e/ou site) e extrair informações sobre a loja para gerar templates de atendimento automático.
 
 Se for um perfil de Instagram, use o contexto do nome de usuário, bio e informações públicas disponíveis.
-Se for um site, analise as informações disponíveis sobre produtos, preços, cores, tamanhos, pagamento, frete e trocas.
+Se for um site, analise as informações disponíveis sobre produtos, preços, cores, tamanhos, pagamento, frete, trocas, rastreamento, segurança e uso dos produtos.
 
-IMPORTANTE: Gere textos de resposta naturais, educados e vendedores em Português do Brasil.
-Use variáveis {{preco}}, {{cores_disponiveis}} e {{link_produto}} quando apropriado nos textos.
-Inclua emojis relevantes nos textos de resposta.`;
+IMPORTANTE: 
+- Gere textos de resposta naturais, educados e vendedores em Português do Brasil.
+- Use variáveis {{preco}}, {{cores_disponiveis}} e {{link_produto}} quando apropriado nos textos.
+- Inclua emojis relevantes nos textos de resposta.
+- A loja é de cintas modeladoras e shapewears femininas chamada Silouete.`;
 
-    const userPrompt = `Analise a loja no endereço: ${url}
+    const userPrompt = `Analise a loja nos seguintes endereços:
+- ${urlList}
 
-Gere templates de atendimento automático para as seguintes categorias:
-1. price - Política de Preços e Promoções
-2. colors - Cores disponíveis dos produtos
-3. sizes - Tabela de Medidas/Tamanhos
-4. payment - Formas de Pagamento
-5. shipping - Frete e Prazos de entrega
-6. exchanges - Política de Trocas e Devoluções
-7. fallback - Resposta padrão quando não entender a pergunta
+Gere templates de atendimento automático para as seguintes 11 categorias:
+1. how_to_buy - Como Comprar (passo a passo para finalizar a compra no site)
+2. price - Política de Preços e Promoções
+3. colors - Cores disponíveis dos produtos
+4. sizes - Tabela de Medidas/Tamanhos
+5. payment - Formas de Pagamento
+6. shipping - Frete e Prazos de entrega
+7. tracking - Rastreamento de Pedidos (como rastrear, código de rastreio)
+8. exchanges - Política de Trocas e Devoluções
+9. security - Segurança do Site (certificados, dados protegidos, confiabilidade)
+10. usage - Uso e Indicações (como usar a cinta, pós-cirúrgico, pós-lipo, indicações médicas)
+11. fallback - Resposta padrão quando não entender a pergunta
 
 Para cada categoria, gere:
-- Um texto de resposta natural e vendedor em PT-BR
+- Um texto de resposta natural e vendedor em PT-BR com emojis
 - 5 a 10 palavras-chave que os clientes usariam para acionar essa categoria`;
+
+    const allCategoryIds = Object.keys(CATEGORY_MAP);
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -91,15 +106,7 @@ Para cada categoria, gere:
                         properties: {
                           id: {
                             type: "string",
-                            enum: [
-                              "price",
-                              "colors",
-                              "sizes",
-                              "payment",
-                              "shipping",
-                              "exchanges",
-                              "fallback",
-                            ],
+                            enum: allCategoryIds,
                           },
                           response_text: { type: "string" },
                           keywords: {
@@ -129,36 +136,21 @@ Para cada categoria, gere:
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({
-            error:
-              "Limite de requisições excedido. Tente novamente em alguns minutos.",
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
+          JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({
-            error:
-              "Créditos de IA esgotados. Adicione créditos ao seu workspace.",
-          }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
+          JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos ao seu workspace." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       const errorText = await response.text();
       console.error("AI gateway error:", response.status, errorText);
       return new Response(
         JSON.stringify({ error: "Erro ao conectar com a IA" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -169,17 +161,13 @@ Para cada categoria, gere:
       console.error("No tool call in response:", JSON.stringify(data));
       return new Response(
         JSON.stringify({ error: "A IA não retornou dados estruturados" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const parsed = JSON.parse(toolCall.function.arguments);
     const aiTemplates = parsed.templates;
 
-    // Map AI categories to Meraki categories
     const result = aiTemplates.map(
       (t: { id: string; response_text: string; keywords: string[] }) => ({
         category: CATEGORY_MAP[t.id] || t.id,
@@ -195,13 +183,8 @@ Para cada categoria, gere:
   } catch (e) {
     console.error("generate-templates error:", e);
     return new Response(
-      JSON.stringify({
-        error: e instanceof Error ? e.message : "Erro desconhecido",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
