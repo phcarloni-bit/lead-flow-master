@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { DEFAULT_TEMPLATES } from '@/lib/classification-engine';
 import { toast } from '@/hooks/use-toast';
-import { Save, Sparkles, Loader2, Instagram, Globe } from 'lucide-react';
+import { Save, Sparkles, Loader2, Instagram, Globe, AlertCircle, RotateCcw } from 'lucide-react';
 
 interface Template {
   id: string;
@@ -91,11 +90,17 @@ export default function Templates() {
     }
   };
 
+  const handleRestoreDefaults = () => {
+    if (window.confirm('Isso irá restaurar todos os textos originais da Silouete (Prazos, 12x Sem Juros, etc). Suas edições atuais serão perdidas. Confirmar?')) {
+      setTemplates(DEFAULT_TEMPLATES.map((t, i) => ({ ...t, id: `default-${i}` })));
+      toast({ title: 'Padrões restaurados', description: 'Templates originais da Silouete foram carregados. Salve para persistir.' });
+    }
+  };
+
   const saveAll = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast({ title: 'Erro', description: 'Faça login para salvar', variant: 'destructive' }); return; }
 
-    // Delete existing and re-insert
     await supabase.from('templates').delete().eq('user_id', user.id);
 
     const rows = templates.map((t) => ({
@@ -109,7 +114,6 @@ export default function Templates() {
     if (error) {
       toast({ title: 'Erro ao salvar', description: error.message, variant: 'destructive' });
     } else {
-      // Also save keywords if available
       const keywordTemplates = templates.filter(t => t.keywords && t.keywords.length > 0);
       if (keywordTemplates.length > 0) {
         await supabase.from('keyword_dictionaries').delete().eq('user_id', user.id);
@@ -168,48 +172,65 @@ export default function Templates() {
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            Variáveis disponíveis: <code className="rounded bg-muted px-1">{'{{preco}}'}</code>{' '}
-            <code className="rounded bg-muted px-1">{'{{cores_disponiveis}}'}</code>{' '}
-            <code className="rounded bg-muted px-1">{'{{link_produto}}'}</code>
-          </p>
+      {/* CTA Banner + Restaurar Padrões */}
+      <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg border">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <AlertCircle className="shrink-0 h-5 w-5 text-yellow-500" />
+          <p>Todas as respostas incluirão o botão <strong className="text-foreground">"Quero Comprar"</strong> automaticamente.</p>
         </div>
+        <Button variant="link" size="sm" onClick={handleRestoreDefaults} className="text-xs gap-1 shrink-0">
+          <RotateCcw className="h-3 w-3" />
+          Restaurar Padrões Silouete
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Variáveis disponíveis: <code className="rounded bg-muted px-1">{'{{preco}}'}</code>{' '}
+          <code className="rounded bg-muted px-1">{'{{cores_disponiveis}}'}</code>{' '}
+          <code className="rounded bg-muted px-1">{'{{link_produto}}'}</code>
+        </p>
         <Button onClick={saveAll}>
           <Save className="mr-1 h-4 w-4" /> Salvar Todos
         </Button>
       </div>
 
-      {templates.map((t, i) => (
-        <Card key={t.id}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-base">{t.category}</CardTitle>
-              <Badge variant={t.is_active ? 'default' : 'secondary'}>{t.is_active ? 'Ativo' : 'Inativo'}</Badge>
-            </div>
-            <Switch checked={t.is_active} onCheckedChange={(v) => updateTemplate(i, 'is_active', v)} />
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {t.keywords && t.keywords.length > 0 && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Palavras-chave:</p>
-                <div className="flex flex-wrap gap-1">
-                  {t.keywords.map((k, ki) => (
-                    <Badge key={ki} variant="outline" className="text-xs">{k}</Badge>
-                  ))}
-                </div>
+      {/* Grid 2 colunas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {templates.map((t, i) => (
+          <Card key={t.id} className={!t.is_active ? 'opacity-70' : ''}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${t.is_active ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
+                <CardTitle className="text-base">{t.category}</CardTitle>
               </div>
-            )}
-            <Textarea
-              value={t.response_text}
-              onChange={(e) => updateTemplate(i, 'response_text', e.target.value)}
-              rows={3}
-              placeholder="Digite a resposta automática..."
-            />
-          </CardContent>
-        </Card>
-      ))}
+              <Switch checked={t.is_active} onCheckedChange={(v) => updateTemplate(i, 'is_active', v)} />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {t.keywords && t.keywords.length > 0 && (
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1 uppercase font-medium">Palavras-chave</p>
+                  <div className="flex flex-wrap gap-1">
+                    {t.keywords.map((k, ki) => (
+                      <Badge key={ki} variant="outline" className="text-xs">{k}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1 uppercase font-medium">Mensagem</p>
+                <Textarea
+                  value={t.response_text}
+                  onChange={(e) => updateTemplate(i, 'response_text', e.target.value)}
+                  disabled={!t.is_active}
+                  rows={4}
+                  placeholder="Digite a resposta automática..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
