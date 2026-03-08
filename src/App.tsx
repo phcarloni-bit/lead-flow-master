@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import LeadQueue from "./pages/LeadQueue";
 import ChatSimulator from "./pages/ChatSimulator";
 import Templates from "./pages/Templates";
+import Integrations from "./pages/Integrations";
 import Logs from "./pages/Logs";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
