@@ -41,15 +41,10 @@ export default function Templates() {
   useEffect(() => { fetchTemplates(); }, []);
 
   const handleGenerateWithAI = async () => {
-    if (!url.trim()) {
-      toast({ title: 'URL obrigatória', description: 'Digite a URL do Instagram ou site da loja.', variant: 'destructive' });
-      return;
-    }
-
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-templates', {
-        body: { url: url.trim() },
+        body: { urls: FIXED_URLS },
       });
 
       if (error) {
