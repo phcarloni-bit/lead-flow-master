@@ -11,14 +11,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Save, Wifi, WifiOff } from 'lucide-react';
 
-const CATEGORIES = ['Preço', 'Cores', 'Tamanhos', 'Pagamento', 'Frete', 'Outro'];
+const CATEGORIES = ['Como Comprar', 'Rastreamento', 'Preço', 'Cores', 'Tamanhos', 'Pagamento', 'Frete', 'Trocas', 'Segurança', 'Uso e Indicações', 'Outro'];
 
 const DEFAULT_KEYWORDS: Record<string, string[]> = {
-  Preço: ['preço', 'quanto custa', 'valor', 'quanto é', 'desconto', 'promoção', 'oferta'],
-  Cores: ['cor', 'cores', 'colorido', 'preto', 'branco', 'azul', 'vermelho', 'rosa'],
-  Tamanhos: ['tamanho', 'tamanhos', 'número', 'medida', 'grande', 'pequeno'],
+  'Como Comprar': ['comprar', 'compra', 'pedido', 'whatsapp', 'instagram', 'como faço', 'onde compro', 'site'],
+  Rastreamento: ['rastreio', 'rastrear', 'acompanhar', 'onde está', 'meu pedido', 'cpf'],
+  Preço: ['preço', 'quanto custa', 'valor', 'desconto', 'promoção', 'oferta'],
+  Cores: ['cor', 'cores', 'nude', 'preto', 'chocolate', 'disponível'],
+  Tamanhos: ['tamanho', 'medida', 'serve', 'veste', 'tabela', '3g'],
   Pagamento: ['pagamento', 'pagar', 'parcela', 'pix', 'cartão', 'boleto'],
-  Frete: ['frete', 'entrega', 'envio', 'prazo', 'correios', 'sedex'],
+  Frete: ['frete', 'entrega', 'envio', 'prazo', 'correios', 'grátis'],
+  Trocas: ['troca', 'devolução', 'devolver', 'trocar', 'não serviu'],
+  Segurança: ['seguro', 'segurança', 'confiável', 'golpe', 'fraude'],
+  'Uso e Indicações': ['usar', 'dormir', 'cirurgia', 'lipo', 'pós operatório', 'machuca'],
   Outro: [],
 };
 
