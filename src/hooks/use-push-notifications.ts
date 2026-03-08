@@ -14,13 +14,12 @@ export function usePushNotifications() {
   const sendBrowserNotification = useCallback((title: string, body: string) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
     try {
-      new Notification(title, {
+      const options: NotificationOptions & Record<string, unknown> = {
         body,
         icon: '/favicon.ico',
-        badge: '/favicon.ico',
         tag: 'meraki-lead',
-        renotify: true,
-      });
+      };
+      new Notification(title, options as NotificationOptions);
     } catch {
       // Silent fail for environments that don't support Notification constructor
     }
