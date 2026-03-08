@@ -60,7 +60,7 @@ export function buildResponse(
   storeConfig?: { default_price?: string; available_colors?: string; product_link?: string }
 ): string {
   if (!category) {
-    return 'Não entendi sua dúvida. Poderia reformular? 😊\n\nSe quiser, posso te ajudar com informações sobre preço, cores, tamanhos, pagamento ou frete.';
+    return 'Não entendi sua dúvida. Poderia reformular? 😊\n\nSe quiser, posso te ajudar com informações sobre preço, cores, tamanhos, pagamento ou frete.\n\nSe já decidiu, clique em "Quero comprar" que um atendente vai te ajudar! 🛒';
   }
 
   const template = templates.find((t) => t.category === category && t.is_active);
@@ -74,6 +74,11 @@ export function buildResponse(
       .replace(/\{\{preco\}\}/g, storeConfig.default_price || '[preço não configurado]')
       .replace(/\{\{cores_disponiveis\}\}/g, storeConfig.available_colors || '[cores não configuradas]')
       .replace(/\{\{link_produto\}\}/g, storeConfig.product_link || '[link não configurado]');
+  }
+
+  // Append CTA to all responses
+  if (!response.includes('Quero comprar')) {
+    response += '\n\nGostou? Clique em "Quero comprar" para falar com um atendente! 🛒';
   }
 
   return response;
