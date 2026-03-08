@@ -18,10 +18,14 @@ interface Template {
   keywords?: string[];
 }
 
+const FIXED_URLS = [
+  'https://www.instagram.com/siloueteshapewear',
+  'https://www.silouete.com.br/',
+];
+
 export default function Templates() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState('https://www.instagram.com/siloueteshapewear');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const fetchTemplates = async () => {
@@ -37,15 +41,10 @@ export default function Templates() {
   useEffect(() => { fetchTemplates(); }, []);
 
   const handleGenerateWithAI = async () => {
-    if (!url.trim()) {
-      toast({ title: 'URL obrigatória', description: 'Digite a URL do Instagram ou site da loja.', variant: 'destructive' });
-      return;
-    }
-
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-templates', {
-        body: { url: url.trim() },
+        body: { urls: FIXED_URLS },
       });
 
       if (error) {
@@ -143,33 +142,29 @@ export default function Templates() {
             <h3 className="font-semibold text-sm">Importar do Instagram / Site</h3>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            Digite a URL do perfil do Instagram ou site. A IA irá buscar informações públicas para gerar os templates automaticamente.
+            A IA vai analisar os perfis oficiais da Silouete para gerar templates automáticos com todas as 11 categorias.
           </p>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                {url.includes('instagram') ? <Instagram className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
-              </div>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="pl-9"
-                placeholder="https://www.instagram.com/sua_loja"
-                disabled={isGenerating}
-              />
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Instagram className="h-3.5 w-3.5" />
+              <span>@siloueteshapewear</span>
             </div>
-            <Button onClick={handleGenerateWithAI} disabled={isGenerating}>
-              {isGenerating ? (
-                <>
-                  <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Analisando...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-1 h-4 w-4" /> Gerar com IA
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Globe className="h-3.5 w-3.5" />
+              <span>silouete.com.br</span>
+            </div>
           </div>
+          <Button onClick={handleGenerateWithAI} disabled={isGenerating}>
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Analisando...
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-1 h-4 w-4" /> Gerar com IA
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
