@@ -167,6 +167,7 @@ export default function Logs() {
                 <TableHead>Contato</TableHead>
                 <TableHead>Canal</TableHead>
                 <TableHead>Mensagem</TableHead>
+                <TableHead>Resposta</TableHead>
                 <TableHead>Categoria</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Comprar?</TableHead>
