@@ -191,6 +191,7 @@ export default function Logs() {
                       <Badge variant="outline" className="text-xs">{log.channel}</Badge>
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate text-sm">{log.message_received}</TableCell>
+                    <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">{log.response_sent || '—'}</TableCell>
                     <TableCell>
                       {log.category_assigned ? (
                         <Badge variant="secondary">{log.category_assigned}</Badge>
