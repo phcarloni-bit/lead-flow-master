@@ -15,6 +15,7 @@ import {
   Check,
   Save,
   ExternalLink,
+  Copy,
 } from 'lucide-react';
 
 export default function Integrations() {
@@ -73,6 +74,13 @@ export default function Integrations() {
     toast({ title: newState ? 'WhatsApp ativado!' : 'WhatsApp desativado' });
   };
 
+  const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-webhook`;
+
+  const copyWebhookUrl = () => {
+    navigator.clipboard.writeText(webhookUrl);
+    toast({ title: 'URL copiada!' });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -106,7 +114,6 @@ export default function Integrations() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Setup guide */}
             <div className="rounded-lg bg-muted p-4 text-sm space-y-2">
               <p className="font-medium">Como configurar:</p>
               <ol className="list-decimal pl-4 space-y-1 text-muted-foreground">
@@ -126,7 +133,6 @@ export default function Integrations() {
               </a>
             </div>
 
-            {/* Token field */}
             <div className="space-y-2">
               <Label>Access Token</Label>
               <div className="flex gap-2">
@@ -137,17 +143,12 @@ export default function Integrations() {
                   placeholder="EAAxxxxxxx..."
                   disabled={!isEditingToken && !!whatsappToken}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsEditingToken(!isEditingToken)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => setIsEditingToken(!isEditingToken)}>
                   {isEditingToken ? <Check className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
 
-            {/* Phone ID */}
             <div className="space-y-2">
               <Label>Phone Number ID</Label>
               <Input
@@ -171,7 +172,7 @@ export default function Integrations() {
           </CardContent>
         </Card>
 
-        {/* Instagram Card - Coming soon */}
+        {/* Instagram Card */}
         <Card className="opacity-70">
           <CardHeader>
             <div className="flex justify-between items-start">
@@ -195,6 +196,20 @@ export default function Integrations() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Webhook URL Section */}
+      <div className="border-t pt-6">
+        <h3 className="font-semibold mb-3">Configurações de Webhook</h3>
+        <div className="bg-gray-900 text-gray-300 p-4 rounded-lg font-mono text-xs flex items-center justify-between gap-4">
+          <span className="truncate">{webhookUrl}</span>
+          <Button variant="ghost" size="sm" onClick={copyWebhookUrl} className="text-primary hover:text-primary shrink-0">
+            <Copy className="mr-1 h-3.5 w-3.5" /> Copiar
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Use este URL no painel de desenvolvedores do Facebook/Meta para receber eventos de webhook.
+        </p>
       </div>
     </div>
   );
