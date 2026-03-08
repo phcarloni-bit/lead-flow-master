@@ -124,11 +124,15 @@ export function buildResponse(
 }
 
 export const DEFAULT_TEMPLATES = [
-  { category: 'Preço', response_text: 'O valor do nosso produto é {{preco}}. Temos condições especiais! 💰', is_active: true },
-  { category: 'Cores', response_text: 'Temos disponível nas cores: {{cores_disponiveis}}. Qual combina mais com você? 🎨', is_active: true },
-  { category: 'Tamanhos', response_text: 'Trabalhamos com tamanhos P, M, G e GG. Posso te ajudar a escolher o ideal? 📏', is_active: true },
-  { category: 'Pagamento', response_text: 'Aceitamos PIX, cartão de crédito (até 12x) e boleto bancário. 💳', is_active: true },
-  { category: 'Frete', response_text: 'Fazemos envio para todo o Brasil! O prazo médio é de 5-10 dias úteis. 📦', is_active: true },
-  { category: 'Trocas', response_text: 'Aceitamos trocas em até 7 dias após o recebimento, desde que o produto esteja sem uso e com etiqueta. Entre em contato para iniciar o processo! 🔄', is_active: true },
-  { category: 'Outro', response_text: 'Obrigado pelo contato! Vou verificar e te respondo em breve. 😊', is_active: true },
+  { category: 'Como Comprar', response_text: 'As compras são realizadas exclusivamente pelo nosso site: {{link_produto}}. Basta escolher o produto, selecionar o tamanho correto e finalizar o pagamento no checkout. Trabalhamos com lingerie feminina, gestante e plus size. 🛍️', is_active: true },
+  { category: 'Rastreamento', response_text: 'Para acompanhar seu pedido, acesse a página "Acompanhar Pedido" no site e informe o número do pedido ou CPF. O código de rastreio fica disponível após o envio. 📍', is_active: true },
+  { category: 'Preço', response_text: 'Nossos preços variam conforme a linha (Feminina, Gestante, Plus Size). Confira as ofertas exclusivas e combos diretamente no site: {{link_produto}}. 💰', is_active: true },
+  { category: 'Cores', response_text: 'Trabalhamos com uma paleta variada incluindo Preto, Nude e Chocolate. A disponibilidade varia por modelo no site: {{link_produto}} 🎨', is_active: true },
+  { category: 'Tamanhos', response_text: 'Cada produto possui tabela de medidas na página. Recomendamos medir busto, cintura e quadril. Trabalhamos do P ao 3G! 📏', is_active: true },
+  { category: 'Pagamento', response_text: 'Parcelamos em até 12x! Aceitamos cartão de crédito, PIX (com 10% de desconto!) e boleto bancário. 💳', is_active: true },
+  { category: 'Frete', response_text: 'Enviamos para todo o Brasil! Frete grátis para compras acima de R$ 249,90. 📦', is_active: true },
+  { category: 'Trocas', response_text: 'Aceitamos trocas desde que o produto esteja sem uso, com etiquetas e dentro do prazo da política. 🔄', is_active: true },
+  { category: 'Segurança', response_text: 'Nosso site é 100% seguro! Utilizamos plataformas de pagamento criptografadas e certificado SSL. 🔒', is_active: true },
+  { category: 'Uso e Indicações', response_text: 'Nossas peças são indicadas para uso estético e funcional. Verifique na descrição se é indicado para pós-cirúrgico ou uso diário. 💪', is_active: true },
+  { category: 'Outro', response_text: 'Olá! Bem-vinda à Silouete 👋 Sou sua especialista virtual. Posso te ajudar com dúvidas sobre tamanhos, como comprar no site ou rastrear seu pedido.', is_active: true },
 ];
