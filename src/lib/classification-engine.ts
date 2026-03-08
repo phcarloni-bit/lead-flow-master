@@ -28,43 +28,43 @@ const normalize = (str: string): string =>
 const DEFAULT_DICTIONARIES: KeywordDictionary[] = [
   {
     category: 'Como Comprar',
-    keywords: ['comprar', 'compra', 'pedido', 'whatsapp', 'instagram', 'vende por aqui', 'faz pedido', 'linha', 'gestante', 'plus size', 'como faço', 'onde compro', 'site'],
+    keywords: ['comprar', 'compra', 'pedido', 'whatsapp', 'instagram', 'vende por aqui', 'faz pedido', 'linha', 'gestante', 'plus size', 'como faço', 'onde compro', 'site', 'quero', 'queria', 'tem como', 'pedir', 'encomenda', 'catálogo'],
   },
   {
     category: 'Rastreamento',
-    keywords: ['rastreio', 'rastrear', 'acompanhar', 'onde está', 'chegou', 'código', 'status do pedido', 'cpf', 'meu pedido'],
+    keywords: ['rastreio', 'rastrear', 'acompanhar', 'onde está', 'chegou', 'código', 'status do pedido', 'cpf', 'meu pedido', 'não chegou', 'quando chega', 'previsão', 'despacho', 'despachado'],
   },
   {
     category: 'Preço',
-    keywords: ['preço', 'valor', 'custa', 'quanto', 'sale', 'promoção', 'desconto', 'oferta', 'barato', 'caro', 'quanto é', 'quanto tá'],
+    keywords: ['preço', 'valor', 'custa', 'quanto', 'sale', 'promoção', 'desconto', 'oferta', 'barato', 'caro', 'quanto é', 'quanto tá', 'tabela de preço', 'cupom'],
   },
   {
     category: 'Cores',
-    keywords: ['cor', 'cores', 'disponível', 'tem preto', 'tem nude', 'tem bege', 'chocolate', 'preto', 'branco', 'rosa', 'nude'],
+    keywords: ['cor', 'cores', 'disponível', 'tem preto', 'tem nude', 'tem bege', 'chocolate', 'preto', 'branco', 'rosa', 'nude', 'qual cor', 'opções de cor'],
   },
   {
     category: 'Tamanhos',
-    keywords: ['tamanho', 'medida', 'serve', 'veste', 'gg', 'pp', 'plus size', 'xgg', 'cintura', 'busto', 'quadril', 'ficou grande', 'apertado', 'escolher tamanho', 'entre dois tamanhos', '3g', 'tabela'],
+    keywords: ['tamanho', 'medida', 'serve', 'veste', 'gg', 'pp', 'plus size', 'xgg', 'cintura', 'busto', 'quadril', 'ficou grande', 'apertado', 'escolher tamanho', 'entre dois tamanhos', '3g', 'tabela', 'medir', 'fita métrica', 'qual tamanho'],
   },
   {
     category: 'Pagamento',
-    keywords: ['pagamento', 'pagar', 'cartão', 'pix', 'boleto', 'parcela', 'juros', '12x', 'parcelamento', 'forma de pagamento', 'à vista'],
+    keywords: ['pagamento', 'pagar', 'cartão', 'pix', 'boleto', 'parcela', 'juros', '12x', 'parcelamento', 'forma de pagamento', 'à vista', 'débito', 'crédito', 'desconto pix'],
   },
   {
     category: 'Frete',
-    keywords: ['frete', 'envio', 'correio', 'prazo', 'chega', 'entrega', 'cep', 'grátis', 'transportadora', 'para onde', 'enviam para', 'dias úteis'],
+    keywords: ['frete', 'envio', 'correio', 'prazo', 'chega', 'entrega', 'cep', 'grátis', 'transportadora', 'para onde', 'enviam para', 'dias úteis', 'frete grátis', 'calcular frete'],
   },
   {
     category: 'Trocas',
-    keywords: ['troca', 'devolução', 'devolver', 'trocar', 'não serviu', 'errado', 'política', 'reembolso', 'garantia', 'defeito'],
+    keywords: ['troca', 'devolução', 'devolver', 'trocar', 'não serviu', 'errado', 'política', 'reembolso', 'garantia', 'defeito', 'arrependimento', 'lacrado', 'etiqueta'],
   },
   {
     category: 'Segurança',
-    keywords: ['seguro', 'segurança', 'confiável', 'golpe', 'fraude', 'criptografia', 'é seguro', 'confiavel'],
+    keywords: ['seguro', 'segurança', 'confiável', 'golpe', 'fraude', 'criptografia', 'é seguro', 'confiavel', 'cnpj', 'anvisa', 'plié', 'empresa', 'desde quando', 'legítimo'],
   },
   {
     category: 'Uso e Indicações',
-    keywords: ['usar', 'dormir', 'cirurgia', 'pós operatório', 'lipo', 'horas', 'tempo', 'dia todo', 'machuca', 'pós cirúrgico', 'indicação'],
+    keywords: ['usar', 'dormir', 'cirurgia', 'pós operatório', 'lipo', 'horas', 'tempo', 'dia todo', 'machuca', 'pós cirúrgico', 'indicação', 'abdominoplastia', 'mamoplastia', 'queimadura', 'gestante', 'gravidez', 'médico'],
   },
 ];
 
@@ -99,7 +99,7 @@ export function buildResponse(
   storeConfig?: { default_price?: string; available_colors?: string; product_link?: string }
 ): string {
   if (!category) {
-    return 'Não entendi sua dúvida. Poderia reformular? 😊\n\nSe quiser, posso te ajudar com informações sobre preço, cores, tamanhos, pagamento ou frete.\n\nSe já decidiu, clique em "Quero comprar" que um atendente vai te ajudar! 🛒';
+    return 'Olá! 👋 Não entendi sua dúvida, mas posso te ajudar com informações sobre preço, cores, tamanhos, pagamento, frete, trocas e muito mais!\n\nDigite sua pergunta ou clique em "Quero comprar" que um atendente vai te ajudar! 🛒';
   }
 
   const template = templates.find((t) => t.category === category && t.is_active);
@@ -124,15 +124,15 @@ export function buildResponse(
 }
 
 export const DEFAULT_TEMPLATES = [
-  { category: 'Como Comprar', response_text: 'As compras são realizadas exclusivamente pelo nosso site: {{link_produto}}. Basta escolher o produto, selecionar o tamanho correto e finalizar o pagamento no checkout. Trabalhamos com lingerie feminina, gestante e plus size. 🛍️', is_active: true },
-  { category: 'Rastreamento', response_text: 'Para acompanhar seu pedido, acesse a página "Acompanhar Pedido" no site e informe o número do pedido ou CPF. O código de rastreio fica disponível após o envio. 📍', is_active: true },
-  { category: 'Preço', response_text: 'Nossos preços variam conforme a linha (Feminina, Gestante, Plus Size). Confira as ofertas exclusivas e combos diretamente no site: {{link_produto}}. 💰', is_active: true },
-  { category: 'Cores', response_text: 'Trabalhamos com uma paleta variada incluindo Preto, Nude e Chocolate. A disponibilidade varia por modelo no site: {{link_produto}} 🎨', is_active: true },
-  { category: 'Tamanhos', response_text: 'Cada produto possui tabela de medidas na página. Recomendamos medir busto, cintura e quadril. Trabalhamos do P ao 3G! 📏', is_active: true },
-  { category: 'Pagamento', response_text: 'Parcelamos em até 12x! Aceitamos cartão de crédito, PIX (com 10% de desconto!) e boleto bancário. 💳', is_active: true },
-  { category: 'Frete', response_text: 'Enviamos para todo o Brasil! Frete grátis para compras acima de R$ 249,90. 📦', is_active: true },
-  { category: 'Trocas', response_text: 'Aceitamos trocas desde que o produto esteja sem uso, com etiquetas e dentro do prazo da política. 🔄', is_active: true },
-  { category: 'Segurança', response_text: 'Nosso site é 100% seguro! Utilizamos plataformas de pagamento criptografadas e certificado SSL. 🔒', is_active: true },
-  { category: 'Uso e Indicações', response_text: 'Nossas peças são indicadas para uso estético e funcional. Verifique na descrição se é indicado para pós-cirúrgico ou uso diário. 💪', is_active: true },
-  { category: 'Outro', response_text: 'Olá! Bem-vinda à Silouete 👋 Sou sua especialista virtual. Posso te ajudar com dúvidas sobre tamanhos, como comprar no site ou rastrear seu pedido.', is_active: true },
+  { category: 'Como Comprar', response_text: 'Olá! 🛍️ As compras na Silouete são feitas exclusivamente pelo nosso site: {{link_produto}}\n\n📌 Passo a passo:\n1. Acesse o site e escolha o produto desejado\n2. Selecione a cor e o tamanho correto (consulte nossa tabela de medidas!)\n3. Adicione ao carrinho\n4. Escolha a forma de pagamento e finalize\n\nTrabalhamos com malhas compressivas pós-cirúrgicas, modeladores, cintas gestantes, linha plus size e muito mais! Se precisar de ajuda para escolher, é só perguntar 😊', is_active: true },
+  { category: 'Rastreamento', response_text: 'Para acompanhar seu pedido, acesse a página "Acompanhar Pedido" no nosso site e informe o número do pedido ou CPF cadastrado 📍\n\nO código de rastreio é enviado por e-mail e WhatsApp assim que seu pedido é despachado. Se ainda não recebeu, aguarde até 2 dias úteis após a confirmação do pagamento.\n\n📦 Dica: verifique também sua caixa de spam!', is_active: true },
+  { category: 'Preço', response_text: 'Nossos preços variam conforme o modelo e a linha! 💰\n\n🔹 Cintas modeladoras: a partir de {{preco}}\n🔹 Malhas pós-cirúrgicas (marca Plié): consulte no site\n🔹 Linha gestante e plus size: preços especiais\n\n🎉 Fique de olho nas nossas promoções no Instagram @siloueteshapewear!\n\nConfira todos os produtos e valores em: {{link_produto}}', is_active: true },
+  { category: 'Cores', response_text: 'Trabalhamos com as cores: {{cores_disponiveis}} 🎨\n\nA disponibilidade pode variar por modelo. Para ver quais cores estão disponíveis no produto desejado, acesse: {{link_produto}}\n\n💡 Dica: Preto e Nude são as cores mais versáteis e combinam com qualquer roupa!', is_active: true },
+  { category: 'Tamanhos', response_text: 'Cada produto da Silouete possui uma tabela de medidas específica na página! 📏\n\n📐 Como medir corretamente:\n1. Use uma fita métrica flexível\n2. Meça busto, cintura e quadril na parte mais larga\n3. Compare com a tabela do produto escolhido\n\nTrabalhamos do PP ao 3G (Plus Size)! Se você estiver entre dois tamanhos, recomendamos o maior para maior conforto.\n\n❓ Ficou em dúvida? Me diga suas medidas que te ajudo a escolher!', is_active: true },
+  { category: 'Pagamento', response_text: 'Aceitamos diversas formas de pagamento! 💳\n\n✅ PIX — com 10% de desconto!\n✅ Cartão de crédito — em até 12x sem juros\n✅ Boleto bancário\n✅ Cartão de débito\n\nTodas as transações são 100% seguras com criptografia de dados. Compre com tranquilidade! 🔒', is_active: true },
+  { category: 'Frete', response_text: 'Enviamos para todo o Brasil! 📦\n\n🚚 Frete grátis para compras acima de R$ 249,90\n⏰ Prazo de entrega: 5 a 15 dias úteis (varia conforme a região)\n📍 Estamos em processo de mudança de Manaus/AM para Goiás, o que vai agilizar ainda mais nossas entregas!\n\nPara calcular o frete do seu CEP, adicione o produto ao carrinho no site: {{link_produto}}', is_active: true },
+  { category: 'Trocas', response_text: 'Aceitamos trocas e devoluções! 🔄\n\n📋 Condições:\n• O produto deve estar sem uso, com etiquetas originais\n• Prazo de até 7 dias após o recebimento\n• A primeira troca por tamanho é gratuita!\n\n📩 Para solicitar, entre em contato por WhatsApp ou pelo e-mail informado na nota fiscal. Enviaremos as instruções de envio.\n\n⚠️ Produtos de uso íntimo só podem ser trocados se estiverem lacrados.', is_active: true },
+  { category: 'Segurança', response_text: 'Sua compra na Silouete é 100% segura! 🔒\n\n✅ Site com certificado SSL (cadeado verde)\n✅ Plataforma de pagamento criptografada\n✅ Empresa registrada com CNPJ ativo\n✅ Autorização ANVISA nº 8.12.028-4\n✅ Distribuidora exclusiva da marca Plié no Amazonas\n✅ Empresa familiar desde 2012\n\nSua segurança e satisfação são nossa prioridade! 💜', is_active: true },
+  { category: 'Uso e Indicações', response_text: 'Nossas peças têm diferentes indicações! 💪\n\n🩺 Pós-cirúrgico (lipo, abdominoplastia, mamoplastia): use conforme orientação médica, geralmente 24h/dia nos primeiros 30-60 dias\n🤰 Gestante: cintas específicas para suporte lombar durante a gravidez\n👗 Uso diário/estético: modeladores para o dia a dia, pode usar por até 8-10 horas\n🔥 Pós-queimadura: malhas compressivas especializadas\n\n⚠️ Sempre consulte seu médico para indicações pós-cirúrgicas!\n\n📌 Veja a descrição completa de cada produto em: {{link_produto}}', is_active: true },
+  { category: 'Outro', response_text: 'Olá! Bem-vinda à Silouete Shapewear! 👋💜\n\nSou sua assistente virtual e posso te ajudar com:\n\n🛍️ Como comprar no site\n📏 Escolha de tamanho\n💰 Preços e promoções\n🎨 Cores disponíveis\n💳 Formas de pagamento\n📦 Frete e prazo de entrega\n📍 Rastreamento de pedido\n🔄 Trocas e devoluções\n🩺 Uso e indicações dos produtos\n\nDigite sua dúvida que vou te ajudar! 😊', is_active: true },
 ];
