@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -26,6 +27,7 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  usePushNotifications();
 
   return (
     <div className="flex h-screen overflow-hidden">
