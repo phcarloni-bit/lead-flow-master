@@ -21,49 +21,6 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
-  const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (error) {
-        console.warn("Session expired, signing out:", error.message);
-        supabase.auth.signOut();
-        setSession(null);
-      } else {
-        setSession(data.session);
-      }
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Check if user has templates (onboarding completed)
-  useEffect(() => {
-    if (!session) return;
-    const check = async () => {
-      const { count } = await supabase
-        .from('templates')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', session.user.id);
-      setShowOnboarding(count === 0);
-    };
-    check();
-  }, [session]);
-
-  if (session === undefined) return null;
-  if (!session) return <Navigate to="/auth" replace />;
-  if (showOnboarding === null) return null;
-
-  if (showOnboarding) {
-    return (
-      <OnboardingWizard
-        onComplete={() => setShowOnboarding(false)}
-        onSkip={() => setShowOnboarding(false)}
-      />
-    );
-  }
-
   return <AppLayout>{children}</AppLayout>;
 }
 
