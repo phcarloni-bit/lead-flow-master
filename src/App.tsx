@@ -53,7 +53,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (session === undefined) return null;
   if (!session) return <Navigate to="/auth" replace />;
-  if (!session) return <Navigate to="/auth" replace />;
+  if (showOnboarding === null) return null;
 
   if (showOnboarding) {
     return (
