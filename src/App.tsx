@@ -25,7 +25,15 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.warn("Session expired, signing out:", error.message);
+        supabase.auth.signOut();
+        setSession(null);
+      } else {
+        setSession(data.session);
+      }
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
