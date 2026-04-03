@@ -1,0 +1,1 @@
+UPDATE store_config SET whatsapp_phone_id = '963478973524770', whatsapp_connected = true WHERE user_id = '7d17bc97-b143-4cd1-a3c8-c31abaeaaf0a';
